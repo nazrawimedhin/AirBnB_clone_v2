@@ -7,7 +7,8 @@ env.hosts = ['44.192.23.50', '3.236.147.117']
 
 
 def do_pack():
-    """generates a .tgz archive"""
+    """generates a .tgz archive
+    """
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     file_path = 'versions/web_static_{}.tgz'.format(now)
     local('mkdir -p versions')
@@ -17,7 +18,8 @@ def do_pack():
 
 
 def do_deploy(archive_path):
-    """distributes an archive to web servers"""
+    """distributes an archive to web servers
+    """
     archive_withoutext = path.splitext(path.basename(archive_path))[0]
     if (not path.exists(archive_path)):
         return False
@@ -38,7 +40,8 @@ def do_deploy(archive_path):
 
 
 def deploy():
-    """created and destributes an archive to web server"""
+    """created and destributes an archive to web server
+    """
     fpath = do_pack()
     if fpath is None:
         return False
