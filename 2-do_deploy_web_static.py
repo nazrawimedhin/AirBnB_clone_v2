@@ -1,39 +1,50 @@
 #!/usr/bin/python3
-from fabric.api import local, cd, put, env, run, sudo
-from datetime import datetime
-from os import path
-
-env.hosts = ['44.192.23.50', '3.236.147.117']
-
-
-def do_pack():
-    """generates a .tgz archive
-    """
-    now = datetime.now().strftime('%Y%m%d%H%M%S')
-    fpath = 'versions/web_static_{}.tgz'.format(now)
-    local('mkdir -p versions/')
-    result = local('tar -cvzf {} web_static'.format(fpath))
-    if (result.succeeded):
-        return fpath
+"""
+Fabric script (based on the file 1-pack_web_static.py) that
+       distributes an archive to your web servers
+Returns False if the file at the path archive_path doesn't exist
+"""
+import os.path
+from fabric.api import *
+from fabric.operations import run, put, sudo
+env.hosts = ['66.70.184.210', '142.44.164.128']
 
 
 def do_deploy(archive_path):
-    """distributes an archive to web servers
+    """ script that distributes archive to web servers
+    All remote commands must be executed on your both web servers
+    (using env.hosts = ['<IP web-01>', 'IP web-02'] variable in your script)
+    Returns True if all operations has been done correctly,
+            otherwise returns False
     """
-    archive_withoutext = path.splitext(path.basename(archive_path))[0]
-    if (not path.exists(archive_path)):
+    if (os.path.isfile(archive_path) is False):
         return False
-    with cd('/tmp'):
-        upload = put(archive_path, archive_withoutext + '.tgz')
-    sudo('mkdir -p /data/web_static/releases/{}'.format(archive_withoutext))
-    sudo('tar -xzf /tmp/{0}.tgz -C /data/web_static/releases/{0}/'.format(
-         archive_withoutext))
-    sudo('rm /tmp/{}.tgz'.format(archive_withoutext))
-    sudo('mv /data/web_static/releases/{0}/web_static/* \
-    /data/web_static/releases/{0}/'.format(archive_withoutext))
-    sudo('rm -rf /data/web_static/releases/{}/web_static'.format(
-        archive_withoutext))
-    sudo('rm -rf /data/web_static/current')
-    sudo('ln -s /data/web_static/releases/{} /data/web_static/current'.format(
-        archive_withoutext))
-    return upload.succeeded
+
+    try:
+        """Upload the archive to the /tmp/ directory of the web server"""
+        put(archive_path, "/tmp/")
+        unpack = archive_path.split("/")[-1]
+        folder = ("/data/web_static/releases/" + unpack.split(".")[0])
+        run("sudo mkdir -p {:s}".format(folder))
+
+        """Uncompress the archive to the folder
+        /data/web_static/releases/<archive filename without extension>
+        on the web server"""
+        run("sudo tar -xzf /tmp/{:s} -C {:s}".format(unpack, folder))
+
+        """Delete the archive from the web server"""
+        run("sudo rm /tmp/{:s}".format(unpack))
+        run("sudo mv {:s}/web_static/* {:s}/".format(folder, folder))
+        run("sudo rm -rf {:s}/web_static".format(folder))
+
+        """Delete the symbolic link /data/web_static/current"""
+        run('sudo rm -rf /data/web_static/current')
+
+        """Create a new the symbolic link
+           /data/web_static/current on the web server, linked to the new
+           version of your code
+           (/data/web_static/releases/<archive filename without extension>)"""
+        run("sudo ln -s {:s} /data/web_static/current".format(folder))
+        return True
+    except:
+        return False
