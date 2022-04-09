@@ -1,13 +1,18 @@
-#!/usr/bin/env bash
-# Script that configures Nginx server with some folders and files
-apt-get -y update
-apt-get -y install nginx
-service nginx start
-mkdir -p /data/web_static/releases/test/
-mkdir -p /data/web_static/shared/
-echo "Holberton School" > /data/web_static/releases/test/index.html
-ln -sf /data/web_static/releases/test/ /data/web_static/current
-chown -R ubuntu:ubuntu /data/
-sed -i '38i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tautoindex off;\n\t}\n' /etc/nginx/sites-available/default
-service nginx restart
-exit 0
+#!/usr/bin/python3
+""" Function that compress a folder """
+from datetime import datetime
+from fabric.api import local
+import os
+
+
+def do_pack():
+    try:
+        if not os.path.exists("versions"):
+            local('mkdir versions')
+        t = datetime.now()
+        f = "%Y%m%d%H%M%S"
+        archive_path = 'versions/web_static_{}.tgz'.format(t.strftime(f))
+        local('tar -cvzf {} web_static'.format(archive_path))
+        return archive_path
+    except:
+        return None
