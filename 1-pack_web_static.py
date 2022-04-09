@@ -1,28 +1,13 @@
 #!/usr/bin/env bash
-#
-# Set up Holberton web servers for the deployment of web_static
-
-apt update
-apt -y install nginx
-
-ufw allow 'Nginx HTTP'
-
-mkdir -p /data/web_static/shared /data/web_static/releases/test
-
-cat > /data/web_static/releases/test/index.html << 'EOF'
-<html>
-  <head>
-  </head>
-  <body>
-    Hello World
-  </body>
-</html>
-EOF
-
-ln -fns /data/web_static/releases/test /data/web_static/current
-
-chown -hR ubuntu:ubuntu /data
-
-sed -i '/^\tlisten 80 default_server;$/i location /hbnb_static/ { alias /data/web_static/current/; }' /etc/nginx/sites-available/default
-
+# Script that configures Nginx server with some folders and files
+apt-get -y update
+apt-get -y install nginx
+service nginx start
+mkdir -p /data/web_static/releases/test/
+mkdir -p /data/web_static/shared/
+echo "Holberton School" > /data/web_static/releases/test/index.html
+ln -sf /data/web_static/releases/test/ /data/web_static/current
+chown -R ubuntu:ubuntu /data/
+sed -i '38i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tautoindex off;\n\t}\n' /etc/nginx/sites-available/default
 service nginx restart
+exit 0
