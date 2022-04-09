@@ -1,40 +1,33 @@
 #!/usr/bin/env bash
-# install nginx if not installed
+# Sets up the web servers for the deployment of web_static
 
-if ! which nginx;
-then
-    sudo apt-get update
-    sudo apt-get install -y nginx
-fi
+# Make sure nginx is installed
+sudo apt -y update;
+sudo apt install -y nginx
 
-# create folders if they don't exist
-if [[ ! -e /data/web_static/releases/test/ ]];
-then
-    sudo mkdir -p /data/web_static/releases/test/
-fi
+sudo mkdir -p /data/web_static/releases/test/
+sudo mkdir -p /data/web_static/shared/
 
-if [[ ! -e /data/web_static/shared/ ]];
-then
-    sudo mkdir -p /data/web_static/shared/
-fi
-
-# create dummy html file
-echo "<html>
+# Test file to see if everything works correctly
+sudo touch /data/web_static/releases/test/index.html
+sudo echo "<html>
   <head>
   </head>
   <body>
-    Holberton School
+    ALX hbnb clone goes here...
   </body>
-  </html>" > /data/web_static/releases/test/index.html
+    </html>" | sudo tee  /data/web_static/releases/test/index.html
 
-# create symbolic link
-sudo ln -fs /data/web_static/releases/test/ /data/web_static/current
+# Create a symlink, recreate it if it exists
 
-# chown of /data/ to ubuntu user and group
-sudo chown -R ubuntu:ubuntu /data/
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-# update nginx confi to serve content of /data/web_static/current to hbnb_static
-sudo sed -i '39i\ \tlocation /hbnb_static {\n\t\talias /data/web_static/current;\n\t}\n' /etc/nginx/sites-enabled/default
+# Change all ownership of folders and files inside /data to ubuntu
+sudo chown -R ubuntu:ubuntu /data
 
-# restart nginx
+# Update the Nginx configuration to serve the content of /data/web_static/current/ to hbnb_static
+new_location="\tserver_name _;\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t\}\n"
+
+sudo sed -i "s-\tserver_name _;-$new_location-" /etc/nginx/sites-available/default
+sudo sed -i "s-\tserver_name _;-$new_location-" /etc/nginx/sites-enabled/default
 sudo service nginx restart
