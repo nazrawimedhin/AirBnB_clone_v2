@@ -1,72 +1,63 @@
 #!/usr/bin/python3
-"""
-Fabric script (based on the file 1-pack_web_static.py) that
-       distributes an archive to your web servers
-Returns False if the file at the path archive_path doesn't exist
-"""
-import os.path
-import time
+""" Function that deploys """
+from datetime import datetime
 from fabric.api import *
-from fabric.operations import run, put, sudo
-from datetime import date
-env.hosts = ['66.70.184.210', '142.44.164.128']
+import os
+import shlex
+
+
+env.hosts = ['35.231.33.237', '34.74.155.163']
+env.user = "ubuntu"
+
+
+def deploy():
+    """ DEPLOYS """
+    try:
+        archive_path = do_pack()
+    except:
+        return False
+
+    return do_deploy(archive_path)
 
 
 def do_pack():
-    timestamp = time.strftime("%Y%m%d%H%M%S")
     try:
-        local("mkdir -p versions")
-        local("tar -cvzf versions/web_static_{:s}.tgz web_static/".
-              format(timestamp))
-        return ("versions/web_static_{:s}.tgz".format(timestamp))
+        if not os.path.exists("versions"):
+            local('mkdir versions')
+        t = datetime.now()
+        f = "%Y%m%d%H%M%S"
+        archive_path = 'versions/web_static_{}.tgz'.format(t.strftime(f))
+        local('tar -cvzf {} web_static'.format(archive_path))
+        return archive_path
     except:
         return None
 
 
 def do_deploy(archive_path):
-    """ script that distributes archive to web servers
-    All remote commands must be executed on your both web servers
-    (using env.hosts = ['<IP web-01>', 'IP web-02'] variable in your script)
-    Returns True if all operations has been done correctly,
-            otherwise returns False
-    """
-    if (os.path.isfile(archive_path) is False):
+    """ Deploys """
+    if not os.path.exists(archive_path):
         return False
-
     try:
-        """Upload the archive to the /tmp/ directory of the web server"""
+        name = archive_path.replace('/', ' ')
+        name = shlex.split(name)
+        name = name[-1]
+
+        wname = name.replace('.', ' ')
+        wname = shlex.split(wname)
+        wname = wname[0]
+
+        releases_path = "/data/web_static/releases/{}/".format(wname)
+        tmp_path = "/tmp/{}".format(name)
+
         put(archive_path, "/tmp/")
-        unpack = archive_path.split("/")[-1]
-        folder = ("/data/web_static/releases/" + unpack.split(".")[0])
-        run("sudo mkdir -p {:s}".format(folder))
-
-        """Uncompress the archive to the folder
-        /data/web_static/releases/<archive filename without extension>
-        on the web server"""
-        run("sudo tar -xzf /tmp/{:s} -C {:s}".format(unpack, folder))
-
-        """Delete the archive from the web server"""
-        run("sudo rm /tmp/{:s}".format(unpack))
-        run("sudo mv {:s}/web_static/* {:s}/".format(folder, folder))
-        run("sudo rm -rf {:s}/web_static".format(folder))
-
-        """Delete the symbolic link /data/web_static/current"""
-        run('sudo rm -rf /data/web_static/current')
-
-        """Create a new the symbolic link
-           /data/web_static/current on the web server, linked to the new
-           version of your code
-           (/data/web_static/releases/<archive filename without extension>)"""
-        run("sudo ln -s {:s} /data/web_static/current".format(folder))
+        run("mkdir -p {}".format(releases_path))
+        run("tar -xzf {} -C {}".format(tmp_path, releases_path))
+        run("rm {}".format(tmp_path))
+        run("mv {}web_static/* {}".format(releases_path, releases_path))
+        run("rm -rf {}web_static".format(releases_path))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {} /data/web_static/current".format(releases_path))
+        print("New version deployed!")
         return True
-    except:
-        return False
-
-
-def deploy():
-    try:
-        my_archive_path = do_pack()
-        deploythis = do_deploy(my_archive_path)
-        return deploythis
     except:
         return False
