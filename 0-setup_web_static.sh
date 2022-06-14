@@ -11,7 +11,7 @@ echo "<html>
   <head>
   </head>
   <body>
-    Holberton School
+    Hello School
   </body>
 </html>" > /data/web_static/releases/test/index.html
 ln -sf /data/web_static/releases/test /data/web_static/current
