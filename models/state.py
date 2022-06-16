@@ -4,7 +4,6 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 import os
-from .city import City
 
 
 class State(BaseModel, Base):
@@ -20,8 +19,6 @@ class State(BaseModel, Base):
         def cities(self):
             """Used when FileStorage is used instead of DBStorage"""
             from models import storage
-            result = []
-            for city in storage.all(City).values():
-                if city.state_id == self.id:
-                    result.append(city)
-            return result
+            all_objs = storage.all()
+            return [i for i in all_objs if all_objs[i].__class__ == 'City'
+                    and all_objs[i].state_id == self.state_id]
