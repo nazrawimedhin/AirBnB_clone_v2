@@ -1,43 +1,35 @@
-# Web Flask
+# 0x04. AirBnB clone - Web framework
 
-This was a sub-project within AirBnB in which I began working with Flask
-and Jinja2. In this project, I began integrating the back-end storage engine
-with the web static HTML/CSS pages written earlier.
-
-Files 0 - 6 were introductory tasks familiarizing myself with
-using Flask. Files 7 forward involved gradually putting together more and more
-complex Jinja templates based on the HBnB HTML pages.
-
-The most complete Flask/Jinja app-template combo in this directory is defined
-in Flask module [100-hbnb.py](./100-hbnb.py) and Jinja template
-[100-hbnb.html](./100-hbnb.html).
-
-To run the Flask app, execute the following command from the root directory
-of the project:
-
-```
-~ $ HBNB_MYSQL_USER=hbnb_dev HBNB_MYSQL_PWD=hbnb_dev_pwd HBNB_MYSQL_HOST=localhost
-HBNB_MYSQL_DB=hbnb_dev_db HBNB_TYPE_STORAGE=db python3 -m web_flask.100-hbnb
-```
-
-The app can be accessed at `0.0.0.0:5000/hbnb`.
-
-Screenshots:
-<p align="center">
-  <img src="https://github.com/bdbaraban/AirBnB_clone_v2/blob/master/assets/hbnb_screenshot_0.png"
-       alt="HolbertonBnB logo">
-</p>
+## Resources:books:
+Read or watch:
+* [What is a Web Framework?](https://intranet.hbtn.io/rltoken/iWopX7mh5JZI0BtpNmMOCA)
+* [A Minimal Application](https://intranet.hbtn.io/rltoken/aY1qkYlIbCDDULBN6nJNYA)
+* [Routing](https://intranet.hbtn.io/rltoken/bAqYEpI4Ph-zLU7EM8iXjg)
+* [Rendering Templates](https://intranet.hbtn.io/rltoken/mpA3GC0bX8WOHO15xUL2Yw)
+* [Synopsis](https://intranet.hbtn.io/rltoken/-JZxrxnDnOID141U1qDcew)
+* [Variables](https://intranet.hbtn.io/rltoken/-qwqxJ6YyQ7Z9JvvPIE1AA)
+* [Comments](https://intranet.hbtn.io/rltoken/TsdwbqCk1utlpeOhc5eUFg)
+* [Whitespace Control](https://intranet.hbtn.io/rltoken/NR5WFn7I6qUTh-b70Od69Q)
+* [List of Control Structures](https://intranet.hbtn.io/rltoken/pyvwBzYKgoDeNQ6_QIwUsw)
+* [Flask](https://intranet.hbtn.io/rltoken/k2C-4UmlYXgA6oMgO7fLgg)
+* [Jinja](https://intranet.hbtn.io/rltoken/fid5cMJKYMaRJqL60PlUew)
 
 ---
+## Learning Objectives:bulb:
+What you should learn from this project:
 
-<p align="center">
-  <img src="https://github.com/bdbaraban/AirBnB_clone_v2/blob/master/assets/hbnb_screenshot_1.png"
-       alt="HolbertonBnB logo">
-</p>
+* What is a Web Framework
+* How to build a web framework with Flask
+* How to define routes in Flask
+* What is a route
+* How to handle variables in a route
+* What is a template
+* How to create a HTML response in Flask by using a template
+* How to create a dynamic template (loops, conditions…)
+* How to display in HTML data from a MySQL database
 
 ---
+---
 
-<p align="center">
-  <img src="https://github.com/bdbaraban/AirBnB_clone_v2/blob/master/assets/hbnb_screenshot_2.png"
-       alt="HolbertonBnB logo">
-</p>
+## Author
+* **Peyton Smith** - [peytonbrsmith](github.com/peytonbrsmith)

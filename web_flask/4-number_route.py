@@ -1,58 +1,79 @@
 #!/usr/bin/python3
-"""Starts a Flask web application.
-
-The application listens on 0.0.0.0, port 5000.
-Routes:
-    /: Displays 'Hello HBNB!'.
-    /hbnb: Displays 'HBNB'.
-    /c/<text>: Displays 'C' followed by the value of <text>.
-    /python/(<text>): Displays 'Python' followed by the value of <text>.
-    /number/<n>: Displays 'n is a number' only if <n> is an integer.
+"""
+Routes Hello
 """
 from flask import Flask
-from flask import abort
+import os
+
 
 app = Flask(__name__)
 
 
-@app.route("/", strict_slashes=False)
-def hello_hbnb():
-    """Displays 'Hello HBNB!'."""
-    return "Hello HBNB!"
-
-
-@app.route("/hbnb", strict_slashes=False)
-def hbnb():
-    """Displays 'HBNB'."""
-    return "HBNB"
-
-
-@app.route("/c/<text>", strict_slashes=False)
-def c(text):
-    """Displays 'C' followed by the value of <text>.
-
-    Replaces any underscores in <text> with slashes.
+@app.route('/')
+def hello_world(strict_slashes=False):
     """
-    text = text.replace("_", " ")
-    return "C {}".format(text)
+    Hello World
 
-
-@app.route("/python", strict_slashes=False)
-@app.route("/python/<text>", strict_slashes=False)
-def python(text="is cool"):
-    """Displays 'Python' followed by the value of <text>.
-
-    Replaces any underscores in <text> with slashes.
+    Returns:
+        [String] -- [Hello HBNB!]
     """
-    text = text.replace("_", " ")
-    return "Python {}".format(text)
+    return 'Hello HBNB!'
 
 
-@app.route("/number/<int:n>", strict_slashes=False)
-def number(n):
-    """Displays 'n is a number' only if n is an integer."""
-    return "{} is a number".format(n)
+@app.route('/hbnb')
+def hbnb(strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'HBNB'
+
+
+@app.route('/c/<path:subpath>')
+def cisfun(subpath, strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'C {}'.format(subpath.replace('_', ' '))
+
+
+@app.route('/python/<path:subpath>')
+def pythonwpath(subpath, strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'Python {}'.format(subpath.replace('_', ' '))
+
+
+@app.route('/python/')
+def pythonwoutpath(strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'Python is cool'
+
+
+@app.route('/number/<int:number>')
+def number(number, strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return "{} is a number".format(number)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    app.run(host='0.0.0.0')
