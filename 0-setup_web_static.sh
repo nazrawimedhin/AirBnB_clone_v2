@@ -1,21 +1,38 @@
 #!/usr/bin/env bash
-# sets up your web servers for the deployment of web_static
+# Sets up a web server for deployment of web_static.
 
-apt-get -y update
-apt-get -y install nginx
-ufw allow 'Nginx HTTP'
-mkdir -p /data/web_static/
-mkdir -p /data/web_static/releases/test/
-mkdir -p /data/web_static/shared/
-echo "<html>
-  <head>
-  </head>
-  <body>
-    Hello School
-  </body>
-</html>" > /data/web_static/releases/test/index.html
-ln -sf /data/web_static/releases/test /data/web_static/current
-chown -R ubuntu:ubuntu /data
-sed -i '/listen 80 default_server/a location /hbnb_static/ { alias /data/web_static/current/;}' /etc/nginx/sites-available/default
-service nginx restart
-exit 0
+sudo apt-get update
+sudo apt-get install -y nginx
+
+sudo mkdir -p /data/web_static/releases/test/
+sudo mkdir -p /data/web_static/shared/
+echo "Holberton School" > /data/web_static/releases/test/index.html
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+
+sudo chown -R ubuntu /data/
+sudo chgrp -R ubuntu /data/
+
+printf %s "server {
+    listen 80;
+    listen [::]:80 default_server;
+    add_header X-Served-By $HOSTNAME;
+    root   /etc/nginx/html;
+    index  index.html index.htm;
+
+    location /hbnb_static {
+        alias /data/web_static/current;
+        index index.html index.htm;
+    }
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    error_page 404 /404.html;
+    location /404 {
+      root /etc/nginx/html;
+      internal;
+    }
+}" > /etc/nginx/sites-available/default
+
+sudo service nginx restart
